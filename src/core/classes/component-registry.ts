@@ -1,4 +1,4 @@
-import { allSettled } from '../../util';
+import { allSettled } from '../../util/async';
 import type { ComponentProto } from '../../types';
 
 export interface ComponentRegistryOptions {

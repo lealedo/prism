@@ -1,5 +1,5 @@
 import globalDefaults from '../../config';
-import { allSettled, documentReady, nextTick } from '../../util';
+import { allSettled, documentReady, nextTick } from '../../util/async';
 import { highlight } from '../highlight';
 import { highlightAll } from '../highlight-all';
 import { highlightElement } from '../highlight-element';
