@@ -12,6 +12,7 @@ export default class Language extends EventTarget {
 	require: List<LanguageLike> = new List();
 	optional: List<string | LanguageLike> = new List();
 	languages: LanguageGrammars = {};
+	readyState = 0;
 
 	constructor (def: LanguageProto, registry: LanguageRegistry) {
 		super();
@@ -135,6 +136,7 @@ export default class Language extends EventTarget {
 	}
 
 	set grammar (grammar: Grammar) {
+		this.readyState = 2;
 		Object.defineProperty(this, 'grammar', { value: grammar, writable: true });
 	}
 
@@ -143,6 +145,7 @@ export default class Language extends EventTarget {
 	}
 
 	set resolvedGrammar (grammar: Grammar) {
+		this.readyState = 3;
 		Object.defineProperty(this, 'resolvedGrammar', { value: grammar, writable: true });
 	}
 }
