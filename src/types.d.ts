@@ -80,14 +80,20 @@ export interface GrammarToken {
 	inside?: string | Grammar | null;
 }
 
-export type GrammarTokens = GrammarTokensRec<GrammarTokensDepth>;
-
-export interface GrammarSpecial {
+export type GrammarSpecial = {
 	/**
 	 * An optional grammar object that will be appended to this grammar.
 	 */
 	$rest?: Grammar | string | null;
 	$tokenize?: (code: string, grammar: Grammar, Prism: Prism) => TokenStream;
+};
+
+export type GrammarTokens = GrammarTokensRec<GrammarTokensDepth> & GrammarSpecial;
+
+/**
+ * A grammar that is defined as its delta from another grammar
+ */
+export type GrammarPatch = {
 	$insert?: GrammarTokens;
 	$before?: TokenName | TokenName[];
 	$after?: TokenName | TokenName[];
@@ -95,9 +101,9 @@ export interface GrammarSpecial {
 	$insertAfter?: GrammarTokens;
 	$delete?: TokenName[];
 	$merge?: GrammarTokens;
-}
+};
 
-export type Grammar = GrammarTokens & GrammarSpecial;
+export type Grammar = GrammarTokens & GrammarSpecial & GrammarPatch;
 
 /**
  * Recursive type helpers for GrammarTokens
