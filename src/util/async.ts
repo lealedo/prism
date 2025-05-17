@@ -36,7 +36,7 @@ export async function allSettled<T> (promises: Promise<T>[]): Promise<(T | null)
 
 export class Deferred<T> extends Promise<T> {
 	executor?: ConstructorParameters<typeof Promise<T>>[0];
-	resolve: (value: T) => void = () => {};
+	resolve: (value: T | Promise<T>) => void = () => {};
 	reject: (reason?: Error) => void = () => {};
 
 	constructor (executor?: ConstructorParameters<typeof Promise<T>>[0]) {
