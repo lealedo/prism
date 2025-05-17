@@ -1,6 +1,6 @@
 import { htmlEncode } from '../shared/util';
 import type { HookEnv, Hooks } from './classes/hooks';
-import type { Token, TokenName, TokenStream } from './token';
+import type { Token, TokenName, TokenStream } from './classes/token';
 
 declare module './classes/hooks' {
 	interface HookEnv {

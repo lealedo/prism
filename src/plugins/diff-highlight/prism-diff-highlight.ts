@@ -1,7 +1,7 @@
-import { Token, getTextContent } from '../../core/token';
+import { Token, getTextContent } from '../../core/classes/token';
 import diff, { PREFIXES } from '../../languages/diff';
 import type { HookEnv } from '../../core/classes/hooks';
-import type { TokenStream } from '../../core/token';
+import type { TokenStream } from '../../core/classes/token';
 import type { PluginProto } from '../../types';
 
 export default {

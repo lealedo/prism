@@ -3,8 +3,8 @@ import singleton from '../prism';
 import { _matchGrammar } from './match';
 import type { Grammar } from '../../types';
 import type LanguageRegistry from '../classes/language-registry';
+import type { Token, TokenStream } from '../classes/token';
 import type { Prism } from '../prism';
-import type { Token, TokenStream } from '../token';
 
 /**
  * This is the heart of Prism, and the most low-level function you can use. It accepts a string of text as input

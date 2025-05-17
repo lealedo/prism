@@ -1,8 +1,8 @@
-import { getTextContent } from '../../core/token';
+import { getTextContent } from '../../core/classes/token';
 import { withoutTokenize } from '../../util/without-tokenize';
 import type { Prism } from '../../core';
+import type { Token, TokenStream } from '../../core/classes/token';
 import type { Registry } from '../../core/registry';
-import type { Token, TokenStream } from '../../core/token';
 import type { Grammar } from '../../types';
 
 const placeholderPattern = /___PH\d+___/;

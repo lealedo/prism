@@ -1,7 +1,7 @@
-import { getTextContent, Token } from '../core/token';
+import { getTextContent, Token } from '../core/classes/token';
 import { withoutTokenize } from '../util/without-tokenize';
 import markup from './markup';
-import type { TokenStream } from '../core/token';
+import type { TokenStream } from '../core/classes/token';
 import type { Grammar, GrammarToken, LanguageProto } from '../types';
 
 function walkTokens (tokens: TokenStream) {

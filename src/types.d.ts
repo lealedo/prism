@@ -7,7 +7,7 @@ import type {
 } from './core/classes/language';
 import type { PluginProto } from './core/classes/plugin-registry';
 import type { Prism } from './core/classes/prism';
-import type { Token, TokenName, TokenStream } from './core/token';
+import type { Token, TokenName, TokenStream } from './core/classes/token';
 
 export type { Token, TokenName, TokenStream };
 

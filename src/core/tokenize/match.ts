@@ -1,5 +1,5 @@
+import { Token } from '../classes/token';
 import singleton from '../prism';
-import { Token } from '../token';
 import { tokenize } from './tokenize';
 import { resolve } from './util';
 import type { GrammarToken, GrammarTokens, RegExpLike } from '../../types';

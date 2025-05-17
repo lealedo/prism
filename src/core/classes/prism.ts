@@ -13,8 +13,8 @@ import type { Grammar, PluginProto } from '../../types';
 import type { HighlightOptions } from '../highlight';
 import type { HighlightAllOptions } from '../highlight-all';
 import type { HighlightElementOptions } from '../highlight-element';
-import type { TokenStream } from '../token';
 import type { LanguageLike } from './language';
+import type { TokenStream } from './token';
 
 /**
  * Prism class, to create Prism instances with different settings.
