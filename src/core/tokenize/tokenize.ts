@@ -1,8 +1,8 @@
 import { LinkedList } from '../linked-list';
 import singleton from '../prism';
 import { _matchGrammar } from './match';
-import { resolve } from './util';
 import type { Grammar } from '../../types';
+import type LanguageRegistry from '../classes/language-registry';
 import type { Prism } from '../prism';
 import type { Token, TokenStream } from '../token';
 
@@ -33,12 +33,6 @@ export function tokenize (this: Prism, text: string, grammar: Grammar): TokenStr
 	const customTokenize = grammar.$tokenize;
 	if (customTokenize) {
 		return customTokenize(text, grammar, prism);
-	}
-
-	let restGrammar = resolve(prism.languageRegistry, grammar.$rest);
-	while (restGrammar) {
-		grammar = { ...grammar, ...restGrammar };
-		restGrammar = resolve(prism.languageRegistry, restGrammar.$rest);
 	}
 
 	const tokenList = new LinkedList<string | Token>();

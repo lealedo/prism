@@ -1,4 +1,6 @@
+import singleton from '../prism';
 import { Token } from '../token';
+import { tokenize } from './tokenize';
 import { resolve } from './util';
 import type { GrammarToken, GrammarTokens, RegExpLike } from '../../types';
 import type {
@@ -18,6 +20,14 @@ export function _matchGrammar (
 	startPos: number,
 	rematch?: RematchOptions
 ): void {
+	const prism = this ?? singleton;
+
+	let restGrammar = resolve(prism.languageRegistry, grammar.$rest);
+	while (restGrammar) {
+		grammar = { ...grammar, ...restGrammar };
+		restGrammar = resolve(prism.languageRegistry, restGrammar.$rest);
+	}
+
 	for (const token in grammar) {
 		const tokenValue = grammar[token];
 		if (!grammar.hasOwnProperty(token) || !tokenValue) {
@@ -36,7 +46,7 @@ export function _matchGrammar (
 
 			const patternObj = toGrammarToken(patterns[j]);
 			let { pattern, lookbehind = false, greedy = false, alias, inside } = patternObj;
-			const insideGrammar = resolve(this.languageRegistry, inside);
+			const insideGrammar = resolve(prism.languageRegistry, inside);
 
 			if (greedy && !pattern.global) {
 				// Without the global flag, lastIndex won't work
@@ -139,7 +149,7 @@ export function _matchGrammar (
 
 				const wrapped = new Token(
 					token,
-					insideGrammar ? this.tokenize(matchStr, insideGrammar) : matchStr,
+					insideGrammar ? tokenize.call(prism, matchStr, insideGrammar) : matchStr,
 					alias,
 					matchStr
 				);
@@ -157,6 +167,7 @@ export function _matchGrammar (
 						cause: `${token},${j}`,
 						reach,
 					};
+
 					_matchGrammar.call(
 						this,
 						text,
