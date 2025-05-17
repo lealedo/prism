@@ -33,3 +33,35 @@ export async function allSettled<T> (promises: Promise<T>[]): Promise<(T | null)
 	const outcomes = await Promise.allSettled(promises);
 	return outcomes.map(o => (o.status === 'fulfilled' ? o.value : null));
 }
+
+export class Deferred<T> extends Promise<T> {
+	executor?: ConstructorParameters<typeof Promise<T>>[0];
+	resolve: (value: T) => void = () => {};
+	reject: (reason?: Error) => void = () => {};
+
+	constructor (executor?: ConstructorParameters<typeof Promise<T>>[0]) {
+		super((resolve, reject) => {
+			this.resolve = resolve;
+			this.reject = reject;
+			executor?.(resolve, reject);
+		});
+		this.executor = executor;
+	}
+}
+
+export function defer<T> (): Promise<T> & {
+	resolve: (value: T) => void;
+	reject: (reason?: any) => void;
+} {
+	let res, rej;
+
+	let promise = new Promise((resolve, reject) => {
+		res = resolve;
+		rej = reject;
+	});
+
+	promise.resolve = res;
+	promise.reject = rej;
+
+	return promise;
+}
