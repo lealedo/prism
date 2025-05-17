@@ -1,16 +1,14 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
 import js from '@eslint/js';
-
 import tsEslintPlugin from '@typescript-eslint/eslint-plugin';
 import tsEslintParser from '@typescript-eslint/parser';
-import { defineConfig } from 'eslint/config';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import eslintCommentsPlugin from 'eslint-plugin-eslint-comments';
 import jsdocPlugin from 'eslint-plugin-jsdoc';
 import regexpPlugin from 'eslint-plugin-regexp';
+import { defineConfig } from 'eslint/config';
 import globals from 'globals';
-
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -159,6 +157,7 @@ const config = [
 			'@typescript-eslint/no-unsafe-return': 'off',
 			'@typescript-eslint/no-unsafe-argument': 'off',
 			'@typescript-eslint/no-floating-promises': 'off',
+			'@typescript-eslint/await-thenable': 'off',
 		},
 	},
 	{
