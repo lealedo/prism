@@ -141,7 +141,8 @@ export default class Language extends EventTarget {
 	}
 
 	get resolvedGrammar () {
-		return (this.resolvedGrammar = grammarPatch(this.grammar));
+		let ret = grammarPatch(this.grammar);
+		return (this.resolvedGrammar = ret);
 	}
 
 	set resolvedGrammar (grammar: Grammar) {
