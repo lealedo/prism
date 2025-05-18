@@ -105,6 +105,7 @@ function insertIntoHostToken (hostTokens: TokenStream, tokenStack: TokenStack) {
 
 type GrammarRef = Grammar | string | undefined | null;
 
+// TODO use resolve() from tokenize/util
 function resolve (ref: GrammarRef, components: Registry): Grammar | undefined {
 	if (!ref) {
 		return undefined;

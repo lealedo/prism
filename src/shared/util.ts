@@ -65,3 +65,7 @@ export function kebabToCamelCase<T extends string> (kebab: T): KebabToCamelCase<
 	const [first, ...others] = kebab.split(/-/);
 	return (first + others.map(capitalize).join('')) as KebabToCamelCase<T>;
 }
+
+export function camelToKebabCase (str: string) {
+	return (str + '').replace(/[A-Z]/g, l => '-' + l.toLowerCase());
+}

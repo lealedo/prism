@@ -1,8 +1,8 @@
 import { Token } from '../classes/token';
 import singleton from '../prism';
 import { tokenize } from './tokenize';
-import { resolve } from './util';
-import type { GrammarToken, GrammarTokens, RegExpLike } from '../../types';
+import { resolve, tokenizeByNamedGroups } from './util';
+import type { GrammarToken, GrammarTokens, RegExpLike, TokenStream } from '../../types';
 import type {
 	LinkedList,
 	LinkedListHeadNode,
@@ -22,11 +22,7 @@ export function _matchGrammar (
 ): void {
 	const prism = this ?? singleton;
 
-	let restGrammar = resolve(prism.languageRegistry, grammar.$rest);
-	while (restGrammar) {
-		grammar = { ...grammar, ...restGrammar };
-		restGrammar = resolve(prism.languageRegistry, restGrammar.$rest);
-	}
+	grammar = resolve.call(prism, grammar);
 
 	for (const token in grammar) {
 		const tokenValue = grammar[token];
@@ -46,11 +42,21 @@ export function _matchGrammar (
 
 			const patternObj = toGrammarToken(patterns[j]);
 			let { pattern, lookbehind = false, greedy = false, alias, inside } = patternObj;
-			const insideGrammar = resolve(prism.languageRegistry, inside);
+			const insideGrammar = resolve.call(prism, inside);
+
+			let flagsToAdd = '';
 
 			if (greedy && !pattern.global) {
 				// Without the global flag, lastIndex won't work
-				patternObj.pattern = pattern = RegExp(pattern.source, pattern.flags + 'g');
+				flagsToAdd += 'g';
+			}
+			if (pattern.source.indexOf('(?<') && pattern.hasIndices === false) {
+				// Has named groups, we need to be able to capture their indices
+				flagsToAdd += 'd';
+			}
+
+			if (flagsToAdd) {
+				patternObj.pattern = pattern = RegExp(pattern.source, pattern.flags + flagsToAdd);
 			}
 
 			for (
@@ -130,6 +136,7 @@ export function _matchGrammar (
 
 				const from = match.index;
 				const matchStr = match[0];
+				let content: TokenStream | string = matchStr;
 				const before = str.slice(0, from);
 				const after = str.slice(from + matchStr.length);
 
@@ -146,13 +153,37 @@ export function _matchGrammar (
 				}
 
 				tokenList.removeRange(removeFrom, removeCount);
+				let byGroups = match.groups ? tokenizeByNamedGroups(match) : null;
 
-				const wrapped = new Token(
-					token,
-					insideGrammar ? tokenize.call(prism, matchStr, insideGrammar) : matchStr,
-					alias,
-					matchStr
-				);
+				if (byGroups?.length > 1) {
+					content = byGroups.map(arg => {
+						let content = typeof arg === 'string' ? arg : arg.content;
+						let type = typeof arg === 'string' ? undefined : arg.type;
+
+						if (insideGrammar) {
+							let localInsideGrammar = insideGrammar[type] ?? insideGrammar;
+
+							if (typeof localInsideGrammar === 'function') {
+								// Late resolving
+								localInsideGrammar = resolve.call(
+									prism,
+									localInsideGrammar(match.groups)
+								);
+							}
+
+							content = tokenize.call(prism, content, localInsideGrammar);
+						}
+
+						return typeof arg === 'object' && arg.type
+							? new Token(arg.type, content)
+							: content;
+					});
+				}
+				else if (insideGrammar) {
+					content = tokenize.call(prism, content, insideGrammar);
+				}
+
+				const wrapped = new Token(token, content, alias, matchStr);
 				currentNode = tokenList.addAfter(removeFrom, wrapped);
 
 				if (after) {

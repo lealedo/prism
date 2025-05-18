@@ -103,6 +103,8 @@ export class Token {
 	}
 }
 
+export default Token;
+
 /**
  * A token stream is an array of strings and {@link Token Token} objects.
  *
