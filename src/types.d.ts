@@ -147,11 +147,17 @@ type DecrementTuple<T extends unknown[], R extends number[] = []> = T extends [
 type Decrement = DecrementTuple<BuildTuple<GrammarTokensDepth>>;
 
 /**
+ * When the recursion limit is reached, the type system will use DeepRecursion instead of recursing further.
+ * It prevents the type from becoming “any” or “unknown” without explanation.
+ */
+type DeepRecursion = { __deepRecursion: true };
+
+/**
  * GrammarTokensRec is a recursive type that builds a partial record of token names as keys, with values that can be a RegExp, GrammarToken, or an array of those types.
  * It uses the decrement tuple to count down the depth of recursion, preventing infinite loops.
  */
 type GrammarTokensRec<Depth extends number = GrammarTokensDepth> = Depth extends 0
-	? never
+	? DeepRecursion
 	: Partial<
 			Record<
 				TokenName,
