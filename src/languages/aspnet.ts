@@ -1,13 +1,21 @@
 import csharp from './csharp';
 import markup from './markup';
-import type { Grammar, GrammarOptions, LanguageProto } from '../types';
+import type { Grammar, GrammarToken, LanguageProto } from '../types';
 
 export default {
 	id: 'aspnet',
 	require: csharp,
 	base: markup,
-	grammar ({ base }: GrammarOptions): Grammar {
-		const directive = {
+	grammar ({ base }): Grammar {
+		const pageDirectiveInside: Grammar = {
+			'page-directive': {
+				pattern:
+					/<%\s*@\s*(?:Assembly|Control|Implements|Import|Master(?:Type)?|OutputCache|Page|PreviousPageType|Reference|Register)?|%>/i,
+				alias: 'tag',
+			},
+		};
+
+		const directive: GrammarToken = {
 			pattern: /<%.*%>/,
 			alias: 'tag',
 			inside: {
@@ -16,40 +24,21 @@ export default {
 					alias: 'tag',
 				},
 				$rest: 'csharp',
-			},
+			} as unknown as Grammar,
 		};
+
+		pageDirectiveInside.$rest = (base!['tag'] as GrammarToken).inside;
 
 		return {
 			'page-directive': {
 				pattern: /<%\s*@.*%>/,
 				alias: 'tag',
-				inside: {
-					'page-directive': {
-						pattern:
-							/<%\s*@\s*(?:Assembly|Control|Implements|Import|Master(?:Type)?|OutputCache|Page|PreviousPageType|Reference|Register)?|%>/i,
-						alias: 'tag',
-					},
-					$rest: base['tag'].inside,
-				},
+				inside: pageDirectiveInside,
 			},
 			'directive': directive,
 			$merge: {
 				'tag': {
-					// Regexp copied from markup, with a negative look-ahead added
-					pattern:
-						/<(?!%)\/?[^\s>\/]+(?:\s+[^\s>\/=]+(?:=(?:("|')(?:\\[\s\S]|(?!\1)[^\\])*\1|[^\s'">=]+))?)*\s*\/?>/,
-					inside: {
-						'attr-value': {
-							inside: {
-								$insertBefore: {
-									'punctuation': {
-										// match directives of attribute value foo="<% Bar %>"
-										'directive': directive,
-									},
-								},
-							},
-						},
-					},
+					pattern: /<(?!%)\/?[^\s>\/]+(?:\s+[^\s>\/=]+(?:=(?:("|')(?:\\[\s\S]|(?!\1)[^\\])*\1|[^\s'">=]+))?)*\s*\/?>/,
 				},
 			},
 			$insertBefore: {
@@ -59,8 +48,12 @@ export default {
 						alias: ['asp', 'comment'],
 					},
 				},
+				'tag/attr-value/punctuation': {
+					// match directives of attribute value foo="<% Bar %>"
+					'directive': directive,
+				} as unknown as GrammarToken,
 				// script runat="server" contains csharp, not javascript
-				['script' in base ? 'script' : 'tag']: {
+				['script' in base! ? 'script' : 'tag']: {
 					'asp-script': {
 						pattern: /(<script(?=.*runat=['"]?server\b)[^>]*>)[\s\S]*?(?=<\/script>)/i,
 						lookbehind: true,
