@@ -10,7 +10,20 @@ export function resolve (
 	let ret = reference ?? undefined;
 
 	if (typeof ret === 'string') {
-		ret = prism.languageRegistry.getLanguage(ret)?.resolvedGrammar;
+		let grammar = prism.languageRegistry.getLanguage(ret)?.resolvedGrammar;
+		if (!grammar) {
+			// ret might be a not yet resolved dependency of one of the loaded languages
+			for (const languageId in prism.languages) {
+				const language = prism.languageRegistry.getLanguage(languageId);
+				const languages = language?.languages;
+				if (languages && ret in languages) {
+					// Yup, found it!
+					grammar = languages[ret];
+					break;
+				}
+			}
+		}
+		ret = grammar;
 	}
 
 	if (typeof ret === 'function' && ret.length === 0) {
